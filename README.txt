@@ -9,13 +9,6 @@ Google Maps Platform API
 Haikei
 
 
-Windows/Linux Instructions:
-Open the Explore Tampa Bay.exe file
-
-Mac Instructions:
-Open the Explore Tampa Bay.app file
-
-
 MIT License
 
 Copyright (c) 2021 Logan Hewitt, Keene Meckfessel, Taylor Roberts

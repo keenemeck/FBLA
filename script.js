@@ -200,9 +200,7 @@ function getdistance() {
     
       return results;
     })
-    .catch((e) => {
-      alert("Geocode was not successful for the following reason: " + e);
-    });
+    .catch((e) => {});
 }
 
 
