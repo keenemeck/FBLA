@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Explore Tampa Bay</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+    <style type="text/css">
+      /* Set the size of the div element that contains the map */
+      #map {
+        height: 400px;
+        /* The height is 400 pixels */
+        width: 100%;
+        /* The width is the width of the web page */
+      }
+    </style>
+
+      <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWUEp7aCtvKOFEHOeW4qDQUgxFcyUBW2U&libraries=places"async></script>
+
+
+    <script> 
+
+      var map;
+      let geocoder;
+      let userlocation;
+      let marker;
+      // Initialize and add the map
+      function initMap() {    
+
+        userlocation = new google.maps.Marker({map})
+
+        
+        map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 16,
+          //recenters the map at the selected location
+          center: { lat: temp[document.getElementById("number").value-1][3], lng: temp[document.getElementById("number").value-1][4] },
+        });
+
+        marker = new google.maps.Marker({
+          position: {lat: temp[document.getElementById("number").value-1][3], lng: temp[document.getElementById("number").value-1][4] }}).setMap(map);
+              
+        geocoder = new google.maps.Geocoder();
+
+        function initialize() {
+          var input = document.getElementById('searchTextField');
+          new google.maps.places.Autocomplete(input);
+        }
+
+        google.maps.event.addDomListener(window, 'load', initialize);
+
+
+
+      }
+
+        
+      
+    </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+
+
+  </head>
+
+
+  <body>
+    <script src="script.js"></script>
+
+    <h2>Explore Tampa Bay</h2>
+    <!--The div element for the map -->
+    <div id="map"></div>
+
+    <!-- Async script executes immediately and must be after any DOM elements used in callback. -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAWUEp7aCtvKOFEHOeW4qDQUgxFcyUBW2U&callback=initMap&libraries=&v=weekly" async></script>
+
+   
+    
+  </body>
+
+    
+    <label for="text">Current Location:</label>
+    <input type="number" class="number" id="number" name="number" min=1 max=50 value="1">
+    
+    <button class="number" onclick="initMap()">View Location</button>
+
+
+    <div class="dropdown">
+    <button class="dropbtn">Sort</button>
+    <div class="dropdown-content">
+      <a onclick="sortthestuff(5)">Name</a>
+      <a onclick="sortthestuff(1)">Cost</a>
+      <a onclick="sortthestuff(2)">Stars</a>
+    </div>
+    </div>
+
+    <div class="dropdown">
+    <button class="dropbtn">Filter</button>
+    <div class="dropdown-content">
+      <a onclick="resetFilters()">None</a>
+      <a onclick="filter('Alcohol')">Alcohol</a>
+      <a onclick="filter('Theme Park')">Theme Park</a>
+      <a onclick="filter('Shopping')">Shopping</a>
+      <a onclick="filter('Family Friendly')">Family Friendly</a>
+      <a onclick="filter('Recreation')">Recreation</a>
+      <a onclick="filter('Guided Tour')">Guided Tour</a>
+      <a onclick="filter('Historical')">Historical</a>
+      <a onclick="filter('Live Performance')">Live Performance</a>
+      <a onclick="filter('Wildlife')">Wildlife</a>
+      <a onclick="filter('Sports')">Sports</a>
+      <a onclick="filter('Mall')">Mall</a>
+      <a onclick="filter('Food')">Food</a>
+      <a onclick="filter('Museum')">Museum</a>
+    </div>
+    </div>
+
+    <button onclick="ascending()" id="funnybutton">Ascending</button>
+
+
+    <label for="text">Starting Point:</label>
+    <input class="text" id="text1" name="text1" placeholder="Enter location">
+ 
+
+    <button class="text" onclick="getdistance()">Directions</button>
+
+    <button class="help" onclick="helpMenu()">Help</button>
+
+    <p id="demo"></p>
+
+  <script>
+    function doit() {
+      output = ""
+      for (let i = 0; i < temp.length; i++) {
+        
+        number = ""
+        if(i<9) {
+          number = "0" + (i+1).toString();
+        } else {
+          number = (i+1).toString();
+        }
+
+        output += number + ". " + temp[i][0] +  "$".repeat(temp[i][1]) + "&nbsp".repeat(3-temp[i][1]) + "&nbsp&nbsp&nbsp&nbsp&nbsp" + "★".repeat(temp[i][2]) + " (" +temp[i][2] + ")<br>";
+      }
+      document.getElementById("demo").innerHTML = output;
+    }
+
+    doit()
+  </script>
+  
+  <div class="spacer layer1"></div>
+
+
+
+    <!--
+    HELP MENU
+
+    we have to make it "intelligent," whatever that means
+
+    
+    click button in top right corner, it removes everything and takes you to a whole new page
+      2 different buttons? or 1 button that brings you to the help "area"?
+      instructions page and a help page
+
+
+    page 1 is instructions
+      print like an empty version of the main screen and explain what each button does
+
+        ie: [sort button that does nothing] -- this button sorts the outputs by cost, name, stars, etc
+            [filter button] -- this button filters the locations based on certian tags
+    
+        see the old project for the old help menu
+  
+    page 2 is a bunch of frequently asked questions
+    
+
+     click on question and it reveals the answer
+      see like uhh https://www.cmu.edu/admission/aid-affordability/financial-aid-faq for example
+
+    example questions and answers
+      Q: what are the possible filters?
+        A: food, amusement, alchohol, ...
+      
+      Q: where does the price and rating data come from?
+        A: we used google maps :)     (I know this sounds dumb, but think of it as like us presenting our project even though we aren't actually standing up presenting information)
+
+
+
+    maybe we could also add like another page for additional info about us and our project?
+      like an acknowledgements or smth?
+      basically just put our readme information on this page
+      if we're doing this we might as well make a whole menu system with a headder and stuff?
+    --->
+
+
+
+
+  <!--
+  
+      STUFF TO DO TOMORROWWWW !!!!!
+
+          MAKE DIRECTIONS DISPLAY THE DISTANCE IN MILES AND MINUTES
+          COMMENT EVERYTHING AND MAKE CODE NICER
+          MAKE IT AN EXE
+
+
+
+
+  new features that would be cool
+    user can add their own location
+      see how far locations are from them
+      use google maps api to get directions to that location?
+      save it somewhere (dynamic storage or something)
+  
+  stuff for polish
+      (list of locations in a seperate txt document and unpack all of it?)
+      it has to be secure??
+      dynamic backups??
+    explain what is happening in a big comment at the top of the program
+    can we like ... output something? like let users export their filtered list as a pdf/txt or something? Maybe with the map on it?
+  
+  
+
+  also dont forget to move the original sort shit to its own independent sorting function (default)
+  -->
+
+</html>
