@@ -4,8 +4,10 @@ FBLA CODING & PROGRAMMING
 Sunlake High School
 Logan Hewitt, Keene Meckfessel, Taylor Roberts
 
-Libraries used:
+Libraries/Assets used:
 Google Maps Platform API
+Haikei
+
 
 MIT License
 

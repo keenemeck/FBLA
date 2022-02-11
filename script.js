@@ -1,3 +1,4 @@
+// List of every location along with data about each
 let alltheplaces = [
   ["Glazer Children's Museum&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp", 1, 4.5, 27.94960, -82.46152, 16, 'Family Friendly', 'Museum', 'Shopping'], 
   ["Tampa Bay History Center&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp", 1, 4.6, 27.94225, -82.44990, 37, 'Historical', 'Guided Tour'],
@@ -51,15 +52,14 @@ let alltheplaces = [
   ["Taco Bus&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp", 1, 3.7, 27.94869, -82.45822, 36, 'Food']
 ];
 
-
-
-
-
+// Variable initialization
 let output = "";
 let temp = alltheplaces;
 
+var distanceOutput = ""
 var change = 1;
 var current = 0;
+var inHelpMenu = false;
 
 // Displays
 function displayMarkers() {
@@ -86,13 +86,14 @@ function sortthestuff(key) {
 
   current = key;
 
-  doit()
+  display()
   initMap()
   displayMarkers()
 }
 
 
-function haversine_distance(mk1, mk2) {
+//uses the haversine formula to calculate the distance between two markers
+function haversine(mk1, mk2) {
   var R = 3958.8; // Radius of the Earth in miles
   var rlat1 = mk1.position.lat() * (Math.PI/180); // Convert degrees to radians
   var rlat2 = mk2.position.lat() * (Math.PI/180); // Convert degrees to radians
@@ -104,27 +105,48 @@ function haversine_distance(mk1, mk2) {
 }
 
 
+// Gets and displays the distance between the user's location and the selected location
 function getdistance() {
 
+  // Reprints the map
   initMap();
+ 
+  // Either clears the message or returns an error if no location is inputted
+  if (document.getElementById("text1").value.length == 0) {
+    if (distanceOutput.length == 0) {
+      window.alert("ERROR: please input a starting point"); // Returns an error
+    return;
+    }
+    else {
+      distanceOutput = ""; // Clears the current distance message
+      display();
+      return;
+    }
+  }
 
+  // Sets first location (user location)
+  var requestloc = {address: document.getElementById("text1").value};
+
+  // Sets second location (selected location)
   let lat2 = temp[document.getElementById("number").value-1][3];
   let lng2 = temp[document.getElementById("number").value-1][4];
-  
-  var requestloc = {address: document.getElementById("text1").value};
+
+
+  // Runs the geocoder function from Google Maps API
   geocoder
     .geocode(requestloc)
     .then((result) => {
       const { results } = result;
-      k = results[0].geometry.location;
+      
+      
+      // Redraws the map
       map.setCenter(results[0].geometry.location);
       userlocation.setPosition(results[0].geometry.location);
       userlocation.setMap(map);
 
+      // Sets the latitude and longitude of the selected location
       var lat1 = results[0].geometry.location.lat();
       var lng1 = results[0].geometry.location.lng();
-  
-      //console.log(latitude + longitude.toString());
       
     const loc1 = {lat: lat1, lng: lng1};
     const loc2 = {lat: lat2, lng: lng2};
@@ -136,9 +158,10 @@ function getdistance() {
     mk2.setVisible(false);
     
     // Calculate and display the distance between markers
-    var distance = haversine_distance(mk1, mk2);
+    var distance = haversine(mk1, mk2);
     console.log("Distance between markers: " + distance.toFixed(2) + " mi.");
 
+    // Initializes Google Maps direction API
     let directionsService = new google.maps.DirectionsService();
     let directionsRenderer = new google.maps.DirectionsRenderer();
     directionsRenderer.setMap(map);
@@ -148,6 +171,7 @@ function getdistance() {
       travelMode: 'DRIVING'
     }
 
+    // Draws the directions on the map
     directionsService.route(route,
     function(response, status) {
       if (status !== 'OK') {
@@ -165,30 +189,15 @@ function getdistance() {
           console.log("Driving distance is " + directionsData.distance.text + " (" + directionsData.duration.text + ").");
         }
       }
+
     });
 
-      return results;
-    })
-    .catch((e) => {
-      alert("Geocode was not successful for the following reason: " + e);
-    });
-
-
-  
-}
-
-
-// Gets the location of the address
-function geocode(request) {
-  var requestloc = {address: request};
-  geocoder
-    .geocode(requestloc)
-    .then((result) => {
-      const { results } = result;
-      k = results[0].geometry.location;
-      map.setCenter(results[0].geometry.location);
-      userlocation.setPosition(results[0].geometry.location);
-      userlocation.setMap(map);
+      // Outputs the distance between the two locations
+      loc1Name = results[0].formatted_address;
+      loc2Name = (temp[document.getElementById("number").value-1][0].replace(/&nbsp/g,''));
+      distanceOutput = loc1Name + " is " + directionsData.distance.text + " (" + directionsData.duration.text + ") away from " +loc2Name + ".";
+      display();
+    
       return results;
     })
     .catch((e) => {
@@ -220,24 +229,32 @@ function filter(key) {
       }
     }  
   }
-  doit()
+  display()
   initMap()
-
   displayMarkers()
 }
 
+// Clears the current filters
 function resetFilters() {
   temp = alltheplaces
-  doit()
+  display()
   initMap()
 }
 
+// Toggles between displaying and closing the help menu
 function helpMenu() {
-  document.getElementById("demo").innerHTML = "";
 
-  helpText = "Welcome to Explore Tampa Bay!<br><br>In this program you can browse a list of 50 attractions around the Tampa Bay Area. On the top of the screen you will see the map, where locations are dynamically updated depending on what you filter or sort by. Under the map you will see a list of the 50 locations.<br><br>Each attraction displays a dollar sign symbol and a star rating. The dollar signs listed next to each location correspond to its price. An attraction with no dollar sign costs nothing, 1 dollar sign costs $10 or less, 2 dollar signs costs $10-$25, and 3 dollar signs costs $25 or more. The Star count is based on the average rating based on reviews of the location on Google Maps.<br><br>The Current Location text box you see allows you to enter a number (1-50), which corresponds to the location listed below. The View Location button allows you to view the chosen location.<br><br>The Sort and Filter dropdown menus allow you to change which locations are displayed. Chosing an option in the Sort dropdown menu sorts the entire list of attractions based on the selected attribute. Chosing an option in the filter menu allows you to only view locations with that selected attribute. To restore the full list of 50 locations, select the 'None' option under the Filter dropdown.The ascending/descending button switches the order of the display to the order that the button reads.<br><br>The Starting Point text box and Directions button allow you to find directions to a selected attraction. Simply type in your current location into the Starting Point text box, and press the Directions button to view directions to the currently selected location. Additionally, the Directions button will display how long it would take to drive to the location."
+  if (inHelpMenu == true)
+  {
+    inHelpMenu = false;
+    display();
+  }
+  else {
 
-  document.getElementById("demo").innerHTML = helpText;
+    inHelpMenu = true;
+    document.getElementById("demo").innerHTML = "";
+
+    helpText = "Welcome to Explore Tampa Bay!<br><br>In this program, you can browse a list of 50 attractions around the Tampa Bay Area. On the top of the screen you will see the map, where locations are dynamically updated depending on what you filter or sort by. Under the map you will see a list of the 50 locations.<br><br>Each attraction displays a dollar sign symbol and a star rating. The dollar signs listed next to each location correspond to its price. An attraction with no dollar sign costs nothing, 1 dollar sign costs $10 or less, 2 dollar signs costs $10-$25, and 3 dollar signs costs $25 or more. The Star count is based on the average rating based on reviews of the location on Google Maps.<br><br>The Current Location text box you see allows you to enter a number (1-50), which corresponds to the location listed below. The View Location button allows you to view the chosen location.<br><br>The Sort and Filter dropdown menus allow you to change which locations are displayed. Choosing an option in the Sort dropdown menu sorts the entire list of attractions based on the selected attribute. Choosing an option in the filter menu allows you to only view locations with that selected attribute. To restore the full list of 50 locations, select the 'None' option under the Filter dropdown.The ascending/descending button switches the order of the display to the order that the button reads.<br><br>The Starting Point text box and Directions button allow you to find directions to a selected attraction. Simply type in your current location into the Starting Point text box, and press the Directions button to view directions to the currently selected location. Additionally, the Directions button will display how long it would take to drive to the location.<br><br>Press Help to exit this menu, and press it again at any time to return. Thank you for using Explore Tampa Bay!"
+    document.getElementById("demo").innerHTML = helpText;
+  }
 }
-// FIXTHE HELP MENU DIRECTION S PART
-

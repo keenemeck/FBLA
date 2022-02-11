@@ -1,19 +1,23 @@
+/* Whole program */
 html {
   background-color: #001220;
   font-family: 'Apercu Mono', monospace;
   color: #e8e6e3
 }
 
+/* Body text */
 body {
   margin: 0;
 	padding: 0;
 	border: 0;
 }
 
+/* Title */
 h2 {
   font-weight: bold;
 }
 
+/* Buttons */
 button {
   background-color: #001220;
   border: 2px solid #2f08a8;
@@ -28,7 +32,7 @@ button {
 }
 
 
-
+/* Button hover */
 button:hover {
   background-color: #2f08a8; /* Green */
   color: #e8e6e3;
@@ -37,13 +41,13 @@ button:hover {
 
 
 
-/* The container <div> - needed to position the dropdown content */
+/* Dropdown container */
 .dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* Dropdown Content (Hidden by Default) */
+/* Dropdown menu */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -53,7 +57,7 @@ button:hover {
   z-index: 1;
 }
 
-/* Links inside the dropdown */
+/* Dropdown links */
 .dropdown-content a {
   color: #e8e6e3;
   padding: 12px 16px;
@@ -73,6 +77,7 @@ button:hover {
   display: block;
 }
 
+/* Bottom image */
 .spacer {
   display: block;
   aspect-ratio: 960/300;
@@ -83,6 +88,7 @@ button:hover {
   background-size: cover;
 }
 
+/* Button image cont. */
 .layer1 {
   background-image: url('./bg.svg');
 }
